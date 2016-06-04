@@ -1,0 +1,21 @@
+name: lel
+version: 1.1.1.1.1.1.1
+main: me.dominik.Jumper.Jumper
+author: me
+commands:
+  edit:
+    description: whtihdfv
+  stats:
+    description: idoshjfsd
+  arena:
+    description: isojfsdop
+  start:
+    description: ishfd
+  test:
+    description: sdfsfs
+  test:
+    description: sdfsd
+  chest:
+    description: hdfhd
+  statswall:
+    description: sdfsf
