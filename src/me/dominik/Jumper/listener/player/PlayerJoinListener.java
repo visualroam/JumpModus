@@ -5,6 +5,7 @@ import me.dominik.Jumper.GameState;
 import me.dominik.Jumper.Jumper;
 import me.dominik.Jumper.manager.SpielerDatenbankManager;
 import me.dominik.Jumper.manager.StatsManager;
+import me.dominik.Jumper.manager.StatsWall;
 import me.dominik.Jumper.scoreboards.LobbyScoreboard;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -38,6 +39,9 @@ public class PlayerJoinListener implements Listener {
         e.setJoinMessage(Jumper.getPREFIX() + "§2[+] §e" + p.getName());
         StatsManager statsManager = new StatsManager();
         statsManager.createPlayer(uuid);
+
+        StatsWall statsWall = new StatsWall();
+        statsWall.updateOne(1);
 
         Jumper.getInstance().getLobbyScoreboard().setLobbyScoreboard(p);
         Jumper.getInstance().getLobbyScoreboard().update();

@@ -38,9 +38,9 @@ public class StatsSign {
         if(bs instanceof Sign){
             Sign sign = (Sign) bs;
             sign.setLine(0, Formatierung.getPlatz(place));
-            sign.setLine(1, name);
-            sign.setLine(2, String.valueOf(points));
-            sign.setLine(3, grund.toUpperCase());
+            sign.setLine(1, "§9" + name);
+            sign.setLine(2, "§6" + String.valueOf(points));
+            sign.setLine(3, "§6" + grund.toUpperCase());
             sign.update();
         } else {
             b.setType(Material.WALL_SIGN);
@@ -57,16 +57,9 @@ public class StatsSign {
         BlockState bs = b.getState();
         if(bs instanceof Skull){
             Skull skull = (Skull) bs;
-            if(skull.getSkullType() == SkullType.PLAYER){
-                skull.setOwner(name);
-                skull.update();
-            } else {
-                skull.setSkullType(SkullType.PLAYER);
-                setSkull();
-            }
-        } else {
-            b.setType(Material.SKULL);
-            setSkull();
+            skull.setSkullType(SkullType.PLAYER);
+            skull.setOwner(name);
+            skull.update();
         }
     }
 

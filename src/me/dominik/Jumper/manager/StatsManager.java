@@ -265,8 +265,8 @@ public class StatsManager {
 
     //Stats Wall
 
-    public HashMap<Integer, String> getOrder(String name, int wieviel){
-        ResultSet rs = Jumper.getInstance().getMySQL().query("SELECT UUID FROM Stats ORDER BY " + name + " LIMIT " + wieviel);
+    public HashMap<Integer, String> getOrder(String name, int anzahl){
+        ResultSet rs = Jumper.getInstance().getMySQL().query("SELECT UUID FROM Stats ORDER BY " + name + " DESC LIMIT " + anzahl);
             int i = 0;
             try {
                 while (rs.next()){

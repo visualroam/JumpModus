@@ -17,7 +17,7 @@ public class Formatierung {
     }
 
     public static String getPlatz(int p){
-        return "Platz " + p;
+        return "§4§nPlatz " + p;
     }
 
 }

@@ -11,6 +11,7 @@ import me.dominik.Jumper.listener.block.BlockPlaceListener;
 import me.dominik.Jumper.listener.entity.EntityDamageListener;
 import me.dominik.Jumper.listener.other.SeverPingEvent;
 import me.dominik.Jumper.listener.player.*;
+import me.dominik.Jumper.manager.StatsWall;
 import me.dominik.Jumper.methoden.LocationTypeAdapter;
 import me.dominik.Jumper.mysql.MySQL;
 import me.dominik.Jumper.scoreboards.DeathMatchScoreboard;
@@ -60,6 +61,8 @@ public class Jumper extends JavaPlugin implements Listener {
         registerListener();
         initSettings();
         initLobbyScroeboard();
+        StatsWall statsWall = new StatsWall();
+        statsWall.updateAll();
 
     }
 
