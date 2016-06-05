@@ -77,33 +77,9 @@ public class StatsWall {
     }
 
     public void updateAll(){
-        for (int id = 1; id > getSize() + 1; id++){
-            String grund = "";
-            int anzahl = 0;
-            StatsManager statsManager = new StatsManager();
-            SpielerDatenbankManager spielerDatenbankManager = new SpielerDatenbankManager();
-            try {
-                ResultSet rs = Jumper.getInstance().getMySQL().query("SELECT * FROM StatsWall WHERE ID= '" + id + "'");
-                if((!rs.next()) || (rs.getString("REASON") == null));
-                grund = rs.getString("REASON").toUpperCase();
-            } catch (SQLException e){
-                e.printStackTrace();
-            }
-            ResultSet rs = Jumper.getInstance().getMySQL().query("SELECT * FROM StatsWall WHERE ID= '" + id + "'");
-            try {
-                if((!rs.next()) || (Integer.valueOf(rs.getInt("NUMBER")) == null));
-                anzahl = rs.getInt("NUMBER");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            HashMap<Integer, String> ranks = statsManager.getOrder(grund,anzahl);
-            for(int i = 1; i < ranks.size() + 1; i++){
-
-                Location loc = getSigns(id).get("sign" + i);
-                StatsSign statsSign = new StatsSign(i,loc,grund,spielerDatenbankManager.getPlayerName(ranks.get(i)));
-                statsSign.setSign();
-                statsSign.setSkull();
-            }
+        for(int i = 1; i < getSize() + 1; i++){
+            System.out.println(i);
+            updateOne(i);
         }
     }
 

@@ -12,8 +12,7 @@ public class Formatierung {
     }
 
     public static int Random(int von, int bis){
-        int random = (int) Math.random() * bis + von;
-        return random;
+        return (int) Math.random() * bis + von;
     }
 
     public static String getPlatz(int p){

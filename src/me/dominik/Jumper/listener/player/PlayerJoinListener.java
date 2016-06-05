@@ -37,20 +37,22 @@ public class PlayerJoinListener implements Listener {
             p.getActivePotionEffects().stream().map(PotionEffect::getType).forEach(p::removePotionEffect);
             dropsRemoved = true;
         }
+        Jumper.getInstance().getFails().put(p, 0);
         e.setJoinMessage(Jumper.getPREFIX() + "§2[+] §e" + p.getName());
         StatsManager statsManager = new StatsManager();
-        statsManager.createPlayer(uuid);
-
+        statsManager.createPlayer(uuid);Jumper.getInstance().getChekpointmessage().put(p, false);
         p.teleport(new Location(Bukkit.getWorld("world"),0,152,3000));
 
         StatsWall statsWall = new StatsWall();
-        statsWall.updateOne(1);
+        statsWall.updateAll();
+
 
         Jumper.getInstance().getLobbyScoreboard().setLobbyScoreboard(p);
         Jumper.getInstance().getLobbyScoreboard().update();
         p.getInventory().setHeldItemSlot(0);
         p.setGameMode(GameMode.ADVENTURE);
         p.getInventory().clear();
+        p.getInventory().setArmorContents(null);
         p.setMaxHealth(20.0D);
         p.setHealth(20.0D);
         p.setFoodLevel(20);

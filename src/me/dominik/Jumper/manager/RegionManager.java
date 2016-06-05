@@ -6,6 +6,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Skull;
+import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -86,9 +89,12 @@ public class RegionManager {
             for(int y = minY; y <= maxY; y++){
                 for(int z = minZ; z <= maxZ; z++){
                     Block b = w.getBlockAt(x,y,z);
-                    if(b.getType().equals(Material.CHEST)){
-                        Block ob = w.getBlockAt(x,y+1,z);
-                        Location loc = new Location(w,x,y,z);
+                    if(b.getType().equals(Material.SKULL)){
+                        Block ob = w.getBlockAt(x,y-1,z);
+                        Skull skull = (Skull) b.getState();
+                        Location loc = new Location(w,x,y-1,z);
+                        Vector vector = new Vector(skull.getRotation().getModX(), skull.getRotation().getModY(), skull.getRotation().getModZ());
+                        loc.setDirection(vector);
                         if(ob.getType() == Material.GLOWSTONE){
                             String name = "spawn1";
                             spawns.put(name,loc);

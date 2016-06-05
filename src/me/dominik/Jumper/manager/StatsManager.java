@@ -210,6 +210,7 @@ public class StatsManager {
     public void addFails(String uuid, int fails){
         if(playerExists(uuid)){
             setFails(uuid, Integer.valueOf(getFails(uuid) + fails));
+
         } else {
             createPlayer(uuid);
             addFails(uuid,fails);

@@ -1,5 +1,6 @@
 package me.dominik.Jumper;
 
+import com.sun.org.glassfish.external.statistics.Stats;
 import lombok.Getter;
 import lombok.Setter;
 import me.dominik.Jumper.manager.AreaManager;
@@ -14,10 +15,11 @@ import me.dominik.Jumper.methoden.Title;
 import me.dominik.Jumper.scoreboards.DeathMatchScoreboard;
 import me.dominik.Jumper.scoreboards.IngameScoreboard;
 import me.dominik.Jumper.scoreboards.LobbyScoreboard;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import net.minecraft.server.v1_8_R3.ChatMessage;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
+import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
+import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
@@ -55,6 +57,9 @@ public class Countdowns {
                 title.setTitleColor(ChatColor.BLUE);
                 title.setSubtitleColor(ChatColor.GOLD);
                 title.broadcast();
+                for(Player p : Bukkit.getOnlinePlayers()){
+                    p.playSound(p.getLocation(), Sound.LEVEL_UP, 1F, 1F);
+                }
             }
             if(i == 60){
                 Bukkit.broadcastMessage(Jumper.getPREFIX() + "Das Spiel beginnt in §6 1 Minute.");
@@ -62,6 +67,9 @@ public class Countdowns {
                 title.setTitleColor(ChatColor.BLUE);
                 title.setSubtitleColor(ChatColor.GOLD);
                 title.broadcast();
+                for(Player p : Bukkit.getOnlinePlayers()){
+                    p.playSound(p.getLocation(), Sound.LEVEL_UP, 1F, 1F);
+                }
             }
             if(i == 30){
                 Bukkit.broadcastMessage(Jumper.getPREFIX() + "Das Spiel beginnt in §6 30 Sekunden.");
@@ -69,8 +77,14 @@ public class Countdowns {
                 title.setTitleColor(ChatColor.BLUE);
                 title.setSubtitleColor(ChatColor.GOLD);
                 title.broadcast();
+                for(Player p : Bukkit.getOnlinePlayers()){
+                    p.playSound(p.getLocation(), Sound.LEVEL_UP, 1F, 1F);
+                }
             }
             if(i < 11){
+                for(Player p : Bukkit.getOnlinePlayers()){
+                    p.playSound(p.getLocation(), Sound.LEVEL_UP, 1F, 1F);
+                }
                 if(i == 5){
                     arena = new AreaManager();
                     int randomID = Formatierung.Random(1, arena.getSize("Arenas"));
@@ -95,10 +109,12 @@ public class Countdowns {
 
             StatsManager statsManager = new StatsManager();
             Jumper.getInstance().setIngameScoreboard(new IngameScoreboard(spawns,finish));
-            Jumper.getInstance().setSpieler((List<Player>) Bukkit.getOnlinePlayers());
+            for(Player p : Bukkit.getOnlinePlayers()){
+                Jumper.getInstance().getSpieler().add(p);
+            }
 
             for(int i = 0; i < Jumper.getInstance().getSpieler().size(); i++){
-                Player player = (Player) Jumper.getInstance().getSpieler().stream().toArray()[i];
+                Player player = Jumper.getInstance().getSpieler().get(i);
                 Jumper.getInstance().getIngameScoreboard().setIngameScoreboard();
                 Location location = spawns.get("spawn" + String.valueOf(i + 1));
                 player.setGameMode(GameMode.SURVIVAL);
@@ -112,7 +128,7 @@ public class Countdowns {
 
             Jumper.getInstance().setGameState(GameState.INGAME);
             inGameCountdown.startCountdown();
-            ChekpointManager chekpointManager = new ChekpointManager(Jumper.getInstance().getSpieler());
+            Jumper.getInstance().setChekpointManager(new ChekpointManager(Jumper.getInstance().getSpieler()));
 
         }
     },Jumper.getInstance().getSettings().getLobbyCountdown(),0,20L);
@@ -123,6 +139,8 @@ public class Countdowns {
         public void tick(int i) {
             IngameScoreboard.scoreboardTimer = i;
             Jumper.getInstance().getIngameScoreboard().update();
+            StatsManager statsManager = new StatsManager();
+            Bukkit.getOnlinePlayers().forEach(online -> ((CraftPlayer) online).getHandle().playerConnection.sendPacket(new PacketPlayOutChat(new ChatMessage("§aDeine Fails: §e" + Jumper.getInstance().getFails().get(online)), (byte) 2)));
             if(i == 600){
                 Bukkit.broadcastMessage(Jumper.getPREFIX() + " Noch 10 Minuten!");
             }
@@ -164,6 +182,7 @@ public class Countdowns {
 
         @Override
         public void finish() {
+            Jumper.getInstance().setDeathmatchManager(new DeathmatchManager(Jumper.getInstance().getSpieler()));
             Jumper.getInstance().setGameState(GameState.GRACEPERIOD);
             int randomID = Formatierung.Random(1, arena.getSize("Deathmatch"));
             AreaManager areaManager = new AreaManager();
@@ -172,15 +191,13 @@ public class Countdowns {
             Bukkit.broadcastMessage(Jumper.getPREFIX() + "§6Von: " + arena.getDeathMatchAuthor(randomID));
             Bukkit.broadcastMessage("");
             spawnss = areaManager.getDeathMatchSpawns(randomID);
-            Jumper.getInstance().setSpec((HashMap<String, Location>) areaManager.getSpectatorSpawn(randomID));
-            Jumper.getInstance().setSpecloc(areaManager.getSpectatorSpawn(randomID).get("specspawn"));
             for(int i = 0; i < Jumper.getInstance().getSpieler().size(); i++){
-                Player player = (Player) Jumper.getInstance().getSpieler().stream().toArray()[i];
+                Player player = Jumper.getInstance().getSpieler().get(i);
                 Location location = spawnss.get("finish" + String.valueOf(i + 1));
                 player.teleport(location);
+                Jumper.getInstance().getDeathmatchManager().saverespawnLocations(player);
             }
-            Countdowns.setDeathmatchManager(new DeathmatchManager(Jumper.getInstance().getSpieler()));
-            Jumper.getInstance().setDeathMatchScoreboard(new DeathMatchScoreboard(Countdowns.getDeathmatchManager()));
+            Jumper.getInstance().setDeathMatchScoreboard(new DeathMatchScoreboard(Jumper.getInstance().getDeathmatchManager()));
             Jumper.getInstance().getDeathMatchScoreboard().setIngameScoreboard();
             gracePeriodCountdown.startCountdown();
         }
@@ -195,6 +212,9 @@ public class Countdowns {
                 title.setTitleColor(ChatColor.BLUE);
                 title.setSubtitleColor(ChatColor.GOLD);
                 title.broadcast();
+                for(Player p : Bukkit.getOnlinePlayers()){
+                    p.playSound(p.getLocation(), Sound.LEVEL_UP, 1F, 1F);
+                }
             }
         }
 
@@ -212,43 +232,46 @@ public class Countdowns {
             DeathMatchScoreboard.scoreboardTimer = i;
             if(i == 300){
                 Bukkit.broadcastMessage(Jumper.getPREFIX() + " Noch 5 Minuten!");
-                Jumper.getInstance().checkEnd();
+                Bukkit.broadcastMessage(Jumper.PREFIX + "§6" + Jumper.getInstance().getSpieler().size() + " §bSpieler verbleiben.");
             }
             if(i == 240){
                 Bukkit.broadcastMessage(Jumper.getPREFIX() + " Noch 4 Minuten!");
-                Jumper.getInstance().checkEnd();
+                Bukkit.broadcastMessage(Jumper.PREFIX + "§6" + Jumper.getInstance().getSpieler().size() + " §bSpieler verbleiben.");
             }
             if(i == 180){
                 Bukkit.broadcastMessage(Jumper.getPREFIX() + " Noch 3 Minuten!");
-                Jumper.getInstance().checkEnd();
+                Bukkit.broadcastMessage(Jumper.PREFIX + "§6" + Jumper.getInstance().getSpieler().size() + " §bSpieler verbleiben.");
             }
             if(i == 120){
                 Bukkit.broadcastMessage(Jumper.getPREFIX() + " Noch 2 Minuten!");
-                Jumper.getInstance().checkEnd();
+                Bukkit.broadcastMessage(Jumper.PREFIX + "§6" + Jumper.getInstance().getSpieler().size() + " §bSpieler verbleiben.");
             }
             if(i == 60){
                 Bukkit.broadcastMessage(Jumper.getPREFIX() + " Noch 1 Minuten!");
-                Jumper.getInstance().checkEnd();
+                Bukkit.broadcastMessage(Jumper.PREFIX + "§6" + Jumper.getInstance().getSpieler().size() + " §bSpieler verbleiben.");
                 Location location = Jumper.getInstance().getSpieler().get(0).getLocation();
                 for(int il = 0; i < Jumper.getInstance().getSpieler().size(); i++){
-                    Player player = (Player) Jumper.getInstance().getSpieler().stream().toArray()[il];
+                    Player player = Jumper.getInstance().getSpieler().get(il);
                     player.teleport(location);
                 }
             }
             if(i == 30){
                 Bukkit.broadcastMessage(Jumper.getPREFIX() + " Noch 30 Sekunden!");
-                Jumper.getInstance().checkEnd();
+                Bukkit.broadcastMessage(Jumper.PREFIX + "§6" + Jumper.getInstance().getSpieler().size() + " §bSpieler verbleiben.");
             }
             if(i <= 10){
                 Bukkit.broadcastMessage(Jumper.getPREFIX() + " Noch " + i + " Sekunden!");
-                Jumper.getInstance().checkEnd();
+                Bukkit.broadcastMessage(Jumper.PREFIX + "§6" + Jumper.getInstance().getSpieler().size() + " §bSpieler verbleiben.");
             }
+            Jumper.getInstance().checkEnd();
         }
 
         @Override
         public void finish() {
-            Bukkit.broadcastMessage(Jumper.getPREFIX() + " Keiner konnt das spiel für sich entscheiden!");
-            Jumper.getInstance().stopServer();
+            if(!Jumper.getInstance().already){
+                Bukkit.broadcastMessage(Jumper.getPREFIX() + " Keiner konnt das spiel für sich entscheiden!");
+                Jumper.getInstance().stopServer();
+            }
         }
     },Jumper.getInstance().getSettings().getDeathMatchCountdown(),0,20L);
 

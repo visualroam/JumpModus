@@ -11,16 +11,15 @@ import me.dominik.Jumper.listener.block.BlockPlaceListener;
 import me.dominik.Jumper.listener.entity.EntityDamageListener;
 import me.dominik.Jumper.listener.other.SeverPingEvent;
 import me.dominik.Jumper.listener.player.*;
+import me.dominik.Jumper.manager.ChekpointManager;
+import me.dominik.Jumper.manager.DeathmatchManager;
 import me.dominik.Jumper.manager.StatsWall;
 import me.dominik.Jumper.methoden.LocationTypeAdapter;
 import me.dominik.Jumper.mysql.MySQL;
 import me.dominik.Jumper.scoreboards.DeathMatchScoreboard;
 import me.dominik.Jumper.scoreboards.IngameScoreboard;
 import me.dominik.Jumper.scoreboards.LobbyScoreboard;
-import org.bukkit.Bukkit;
-import org.bukkit.Difficulty;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
@@ -40,13 +39,19 @@ public class Jumper extends JavaPlugin implements Listener {
     @Getter private Settings settings;
     @Getter private MySQL mySQL;
     @Getter @Setter private Connection con;
-    @Getter @Setter private List<Player> spieler;
+    @Getter @Setter private List<Player> spieler = new ArrayList<>();
     public static Gson locationGson = new GsonBuilder().registerTypeAdapter(Location.class, new LocationTypeAdapter()).create();
+    @Getter @Setter public boolean already = false;
     @Getter @Setter private HashMap<Player, Location> checkpoints = new HashMap<>();
     @Getter @Setter private HashMap<Location, Inventory> chest = new HashMap<>();
     @Getter @Setter private HashMap<Player, Integer> lives = new HashMap<>();
     @Getter @Setter private Location specloc;
-    @Getter @Setter private HashMap<String, Location> spec = new HashMap<>();
+    @Getter @Setter private Map<String, Location> spec = new HashMap<>();
+    @Getter @Setter private HashMap<Player, Location> respawns = new HashMap<>();
+    @Getter @Setter private HashMap<Player , Boolean> chekpointmessage = new HashMap<>();
+    @Getter @Setter private DeathmatchManager deathmatchManager;
+    @Getter @Setter private ChekpointManager chekpointManager;
+    @Getter @Setter private HashMap<Player, Integer> fails = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -63,7 +68,6 @@ public class Jumper extends JavaPlugin implements Listener {
         initLobbyScroeboard();
         StatsWall statsWall = new StatsWall();
         statsWall.updateAll();
-
     }
 
     public void onDisable() {
@@ -81,7 +85,6 @@ public class Jumper extends JavaPlugin implements Listener {
         this.getCommand("arena").setExecutor(new ArenaCreateCommand());
         this.getCommand("start").setExecutor(new StartCommand());
         this.getCommand("test").setExecutor(new TestCommand());
-        this.getCommand("chest").setExecutor(new ChestCommand());
         this.getCommand("statswall").setExecutor(new StatsWallCommand());
     }
 
@@ -98,7 +101,9 @@ public class Jumper extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new BlockBreakListener(),this);
         pluginManager.registerEvents(new BlockPlaceListener(),this);
         pluginManager.registerEvents(new EntityDamageListener(),this);
+        pluginManager.registerEvents(new PlayerMoveListener(), this);
         pluginManager.registerEvents(new PlayerQuitListener(), this);
+        pluginManager.registerEvents(new LoginEventListener(), this);
     }
 
     public void initWorld() {
@@ -112,12 +117,14 @@ public class Jumper extends JavaPlugin implements Listener {
         world.setStorm(false);
         world.setTime(12000L);
         world.setPVP(true);
+        world.setGameRuleValue("KeepInventory", String.valueOf(true));
 
     }
 
     public void initSettings() {
         this.settings = new Settings();
     }
+
 
 
     public void initLobbyScroeboard() {
@@ -131,23 +138,25 @@ public class Jumper extends JavaPlugin implements Listener {
     }
 
     public void checkEnd(){
-        if(spieler.size() == 1){
-            Player winner = spieler.get(0).getPlayer();
-            Bukkit.getScheduler().cancelTasks(this);
+        if (!already) {
+            if(spieler.size() == 1){
+                Player winner = spieler.get(0).getPlayer();
+                Bukkit.getScheduler().cancelTasks(this);
 
-            for (int i = 0; i < 5; i++) Bukkit.broadcastMessage(" ");
-            Bukkit.broadcastMessage(Jumper.PREFIX + "§6§l" + winner.getName() + " §bhat die Runde gewonnen!");
-            winner.sendMessage(Jumper.PREFIX + "§a§lHerzlichen Glückwunsch!");
-            winner.sendMessage(Jumper.PREFIX + "§aDu hast das Spiel gewonnen!");
-            Bukkit.broadcastMessage(" ");
-            stopServer();
+                for (int i = 0; i < 5; i++) Bukkit.broadcastMessage(" ");
+                Bukkit.broadcastMessage(Jumper.PREFIX + "§6§l" + winner.getName() + " §bhat die Runde gewonnen!");
+                winner.sendMessage(Jumper.PREFIX + "§a§lHerzlichen Glückwunsch!");
+                winner.sendMessage(Jumper.PREFIX + "§aDu hast das Spiel gewonnen!");
+                Bukkit.broadcastMessage(" ");
+                stopServer();
+                already = true;
+            }
         }
-        Bukkit.broadcastMessage(Jumper.PREFIX + "§6" + spieler.size() + " §bSpieler verbleiben.");
     }
 
 
     public void ConnectMySQL(){
-        mySQL = new MySQL("localhost", "jumper", "dome", "uhBxYycytjaSZrG5");
+        mySQL = new MySQL("ms657.nitrado.net", "ni536040_1_DB", "ni536040_1_DB", "s84SGjit");
         mySQL.update("CREATE TABLE IF NOT EXISTS Stats(UUID varchar(64), GAMESPLAYED int, KILLS int, DEATHS int, FAILS int);");
         mySQL.update("CREATE TABLE IF NOT EXISTS Arenas(ID int,wfew varchar(255), AUTHORS varchar(255), SPAWNS text, FINISHS text);");
         mySQL.update("CREATE TABLE IF NOT EXISTS Settings(UUID varchar(64),lobbyCountdown int,inGameCountdown int, deathMatchCountdown int,minPlayers int);");
@@ -165,3 +174,9 @@ public class Jumper extends JavaPlugin implements Listener {
 
 
 
+ /*
+    Kisten beim Tot im Deathmatch | erledigt.
+    Fails der Runde :D | erledigt.
+    Allgmeine Kisten verteilung | erledigt.
+    Spawnen in Richtung Map
+  */
