@@ -9,6 +9,7 @@ import me.dominik.Jumper.manager.StatsWall;
 import me.dominik.Jumper.scoreboards.LobbyScoreboard;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -39,6 +40,8 @@ public class PlayerJoinListener implements Listener {
         e.setJoinMessage(Jumper.getPREFIX() + "§2[+] §e" + p.getName());
         StatsManager statsManager = new StatsManager();
         statsManager.createPlayer(uuid);
+
+        p.teleport(new Location(Bukkit.getWorld("world"),0,152,3000));
 
         StatsWall statsWall = new StatsWall();
         statsWall.updateOne(1);
