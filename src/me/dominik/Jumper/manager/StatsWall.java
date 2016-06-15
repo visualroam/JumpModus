@@ -50,7 +50,7 @@ public class StatsWall {
         String grund = "";
         int anzahl = 0;
         StatsManager statsManager = new StatsManager();
-        SpielerDatenbankManager spielerDatenbankManager = new SpielerDatenbankManager();
+        PlayerDatabaseManager playerDatabaseManager = new PlayerDatabaseManager();
         try {
             ResultSet rs = Jumper.getInstance().getMySQL().query("SELECT * FROM StatsWall WHERE ID= '" + id + "'");
             if((!rs.next()) || (rs.getString("REASON") == null));
@@ -65,11 +65,11 @@ public class StatsWall {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        HashMap<Integer, String> ranks = statsManager.getOrder(grund,anzahl);
+        HashMap<Integer, String> ranks = statsManager.getOrderWithInteger(grund,anzahl);
         for(int i = 1; i < ranks.size() + 1; i++){
 
             Location loc = getSigns(id).get("sign" + i);
-            StatsSign statsSign = new StatsSign(i,loc,grund,spielerDatenbankManager.getPlayerName(ranks.get(i)));
+            StatsSign statsSign = new StatsSign(i,loc,grund, playerDatabaseManager.getPlayerName(ranks.get(i)));
             statsSign.setSign();
             statsSign.setSkull();
         }

@@ -1,7 +1,7 @@
 package me.dominik.Jumper.scoreboards;
 
 import me.dominik.Jumper.Jumper;
-import me.dominik.Jumper.methoden.Formatierung;
+import me.dominik.Jumper.methoden.Formatting;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -46,7 +46,7 @@ public class LobbyScoreboard {
     }
 
     public void update() {
-        objective.setDisplayName(Jumper.getPREFIX() + " " + Formatierung.formatSecondsToMMSS(scoreboardTimer));
+        objective.setDisplayName(Jumper.getPREFIX() + " " + Formatting.formatSecondsToMMSS(scoreboardTimer));
         lobbyScoreboard.getTeam("spieleranzahl2").setPrefix(String.valueOf(Bukkit.getOnlinePlayers().size()));
     }
 

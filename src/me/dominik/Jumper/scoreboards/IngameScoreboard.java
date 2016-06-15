@@ -3,18 +3,14 @@ package me.dominik.Jumper.scoreboards;
 import lombok.Getter;
 import lombok.Setter;
 import me.dominik.Jumper.Jumper;
-import me.dominik.Jumper.methoden.Formatierung;
+import me.dominik.Jumper.methoden.Formatting;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -47,7 +43,7 @@ public class IngameScoreboard {
     }
 
     public void update(){
-        objective.setDisplayName(Jumper.getPREFIX() + " " + Formatierung.formatSecondsToMMSS(scoreboardTimer));
+        objective.setDisplayName(Jumper.getPREFIX() + " " + Formatting.formatSecondsToMMSS(scoreboardTimer));
         for(int i = 0; i < Bukkit.getOnlinePlayers().size(); i++){
             Player p = (Player) Bukkit.getOnlinePlayers().stream().toArray()[i];
             objective.getScore(p.getDisplayName()).setScore(getDistance(i,p));

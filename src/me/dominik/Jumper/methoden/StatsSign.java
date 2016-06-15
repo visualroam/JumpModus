@@ -1,6 +1,6 @@
 package me.dominik.Jumper.methoden;
 
-import me.dominik.Jumper.manager.SpielerDatenbankManager;
+import me.dominik.Jumper.manager.PlayerDatabaseManager;
 import me.dominik.Jumper.manager.StatsManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -32,12 +32,12 @@ public class StatsSign {
         int z = (int) signLocation.getZ();
         Block b = world.getBlockAt(x,y,z);
         BlockState bs = b.getState();
-        SpielerDatenbankManager spielerDatenbankManager = new SpielerDatenbankManager();
+        PlayerDatabaseManager playerDatabaseManager = new PlayerDatabaseManager();
         StatsManager statsManager = new StatsManager();
-        int points =  statsManager.get(spielerDatenbankManager.getPlayerUUID(name), grund);
+        int points =  statsManager.get(playerDatabaseManager.getPlayerUUID(name), grund);
         if(bs instanceof Sign){
             Sign sign = (Sign) bs;
-            sign.setLine(0, Formatierung.getPlatz(place));
+            sign.setLine(0, Formatting.getPlatz(place));
             sign.setLine(1, "§9" + name);
             sign.setLine(2, "§6" + String.valueOf(points));
             sign.setLine(3, "§6" + grund.toUpperCase());

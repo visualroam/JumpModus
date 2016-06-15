@@ -2,7 +2,7 @@ package me.dominik.Jumper.scoreboards;
 
 import me.dominik.Jumper.Jumper;
 import me.dominik.Jumper.manager.DeathmatchManager;
-import me.dominik.Jumper.methoden.Formatierung;
+import me.dominik.Jumper.methoden.Formatting;
 import org.bukkit.Bukkit;
 
 import org.bukkit.entity.Player;
@@ -36,7 +36,7 @@ public class DeathMatchScoreboard {
     }
 
     public void update(){
-        objective.setDisplayName(Jumper.getPREFIX() + " " + Formatierung.formatSecondsToMMSS(scoreboardTimer));
+        objective.setDisplayName(Jumper.getPREFIX() + " " + Formatting.formatSecondsToMMSS(scoreboardTimer));
         for(int i = 0; i < Bukkit.getOnlinePlayers().size(); i++){
             Player p = (Player) Bukkit.getOnlinePlayers().stream().toArray()[i];
             objective.getScore(p.getDisplayName()).setScore(deathmatchManager.getLives(p));

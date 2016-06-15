@@ -1,6 +1,6 @@
 package me.dominik.Jumper.methoden;
 
-public class Formatierung {
+public class Formatting {
 
     public static String formatSecondsToMMSS(int timer) {
         return twoDigitString(timer % 3600 / 60) + ":" + twoDigitString(timer % 60);
@@ -20,3 +20,4 @@ public class Formatierung {
     }
 
 }
+

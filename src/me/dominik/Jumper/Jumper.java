@@ -5,16 +5,18 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import lombok.Setter;
+import me.dominik.Jumper.achievement.TeufelAchivment;
 import me.dominik.Jumper.commands.*;
 import me.dominik.Jumper.listener.block.BlockBreakListener;
 import me.dominik.Jumper.listener.block.BlockPlaceListener;
 import me.dominik.Jumper.listener.entity.EntityDamageListener;
+import me.dominik.Jumper.listener.inventory.InventoryInteractListener;
+import me.dominik.Jumper.listener.other.AsyncPlayerChatListener;
 import me.dominik.Jumper.listener.other.SeverPingEvent;
 import me.dominik.Jumper.listener.player.*;
-import me.dominik.Jumper.manager.ChekpointManager;
-import me.dominik.Jumper.manager.DeathmatchManager;
-import me.dominik.Jumper.manager.StatsWall;
-import me.dominik.Jumper.methoden.LocationTypeAdapter;
+import me.dominik.Jumper.manager.*;
+import me.dominik.Jumper.methoden.*;
+import me.dominik.Jumper.methoden.Achievement;
 import me.dominik.Jumper.mysql.MySQL;
 import me.dominik.Jumper.scoreboards.DeathMatchScoreboard;
 import me.dominik.Jumper.scoreboards.IngameScoreboard;
@@ -52,6 +54,10 @@ public class Jumper extends JavaPlugin implements Listener {
     @Getter @Setter private DeathmatchManager deathmatchManager;
     @Getter @Setter private ChekpointManager chekpointManager;
     @Getter @Setter private HashMap<Player, Integer> fails = new HashMap<>();
+    @Getter @Setter private ItemManager itemManager = new ItemManager();
+    @Getter @Setter private AchievementManager achievementManager = new AchievementManager();
+    @Getter private HashMap<Player, List<Achievement>> gainedAch = new HashMap<>();
+
 
     @Override
     public void onEnable() {
@@ -59,12 +65,13 @@ public class Jumper extends JavaPlugin implements Listener {
 
         setGameState(GameState.WAITING);
 
-        ConnectMySQL();
+        connectMySQL();
 
         initWorld();
         registerCommands();
         registerListener();
         initSettings();
+        initAchievments();
         initLobbyScroeboard();
         StatsWall statsWall = new StatsWall();
         statsWall.updateAll();
@@ -104,6 +111,8 @@ public class Jumper extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new PlayerMoveListener(), this);
         pluginManager.registerEvents(new PlayerQuitListener(), this);
         pluginManager.registerEvents(new LoginEventListener(), this);
+        pluginManager.registerEvents(new InventoryInteractListener(), this);
+        pluginManager.registerEvents(new AsyncPlayerChatListener(), this);
     }
 
     public void initWorld() {
@@ -123,6 +132,11 @@ public class Jumper extends JavaPlugin implements Listener {
 
     public void initSettings() {
         this.settings = new Settings();
+    }
+
+    public void initAchievments(){
+        AchievementManager manager = getAchievementManager();
+        manager.registerAchievement(new TeufelAchivment());
     }
 
 
@@ -155,21 +169,24 @@ public class Jumper extends JavaPlugin implements Listener {
     }
 
 
-    public void ConnectMySQL(){
+    public void connectMySQL(){
         mySQL = new MySQL("ms657.nitrado.net", "ni536040_1_DB", "ni536040_1_DB", "s84SGjit");
-        mySQL.update("CREATE TABLE IF NOT EXISTS Stats(UUID varchar(64), GAMESPLAYED int, KILLS int, DEATHS int, FAILS int);");
+        mySQL.update("CREATE TABLE IF NOT EXISTS Stats(UUID varchar(64), GAMESPLAYED int, WINS int, KILLS int, DEATHS int, FAILS int);");
         mySQL.update("CREATE TABLE IF NOT EXISTS Arenas(ID int,wfew varchar(255), AUTHORS varchar(255), SPAWNS text, FINISHS text);");
         mySQL.update("CREATE TABLE IF NOT EXISTS Settings(UUID varchar(64),lobbyCountdown int,inGameCountdown int, deathMatchCountdown int,minPlayers int);");
         mySQL.update("CREATE TABLE IF NOT EXISTS Inventorys(ID int, INVENTORY text);");
         mySQL.update("CREATE TABLE IF NOT EXISTS Deathmatch(ID int, NAME text, AUTHOR text, SPAWNS text, SPECTATOR text);");
         mySQL.update("CREATE TABLE IF NOT EXISTS Spieler(NAME text, UUID text);");
         mySQL.update("CREATE TABLE IF NOT EXISTS StatsWall(ID int, NUMBER int, REASON text, LOCATIONS text);");
+        mySQL.update("CREATE TABLE IF NOT EXISTS Achievment(UUID text, LIST text);");
     }
 
     public void stopServer() {
         Bukkit.broadcastMessage(Jumper.PREFIX + "Der Server startet in §615 §bSekunden neu...");
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop Das Spiel ist beendet!"), 15 * 20L);
     }
+
+
 }
 
 
@@ -178,5 +195,11 @@ public class Jumper extends JavaPlugin implements Listener {
     Kisten beim Tot im Deathmatch | erledigt.
     Fails der Runde :D | erledigt.
     Allgmeine Kisten verteilung | erledigt.
-    Spawnen in Richtung Map
+    Spawnen in Richtung Map | erledigt.
+    Mehr Zeit um das Ziel zu erreichen.
+    Sound usw :D
+    Instakill Item. | erledigt
+    Settings
+
+
   */

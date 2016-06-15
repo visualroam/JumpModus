@@ -4,6 +4,7 @@ import me.dominik.Jumper.Countdowns;
 import me.dominik.Jumper.GameState;
 import me.dominik.Jumper.Jumper;
 import me.dominik.Jumper.manager.ChekpointManager;
+import me.dominik.Jumper.manager.StatsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -101,31 +102,59 @@ public class PlayerInteractListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e){
-        Player player = e.getPlayer();
-        if(Jumper.getInstance().getGameState() == GameState.INGAME){
-            if(e.getAction() == Action.PHYSICAL){
-                if(e.getClickedBlock().getType() == Material.IRON_PLATE){
-                    ChekpointManager chekpointManager = new ChekpointManager();
-                    if(!e.getClickedBlock().hasMetadata(player.getName())){
-                        chekpointManager.newCheckpoint(player);
-                        player.sendMessage(Jumper.getPREFIX() + " Checkpoint erreicht.");
-                        player.playSound(player.getLocation(), Sound.LEVEL_UP, 0.5F, 0.5F);
-                        e.getClickedBlock().setMetadata(player.getName(), new FixedMetadataValue(Jumper.getInstance(), true));
+        try {
+
+        }catch (NullPointerException aex){
+
+            Player player = e.getPlayer();
+            if(Jumper.getInstance().getGameState() == GameState.WAITING || Jumper.getInstance().getGameState() == GameState.COUNTDOWN){
+                if(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK ){
+                    if(e.getItem().equals(Jumper.getInstance().getItemManager().getItem("vote"))){
+                        //TODO:Voting
+                    }
+                    if(e.getItem().equals(Jumper.getInstance().getItemManager().getItem("ach"))){
+                        //TODO:ACHIVMENT
                     }
                 }
-                if(e.getClickedBlock().getType() == Material.GOLD_PLATE){
-                    Jumper.getInstance().setGameState(GameState.GRACEPERIOD);
-                    Countdowns.getInGameCountdown().stopCountdown(false);
-                    Bukkit.broadcastMessage(Jumper.getPREFIX() + " Der Spieler §c" + player.getDisplayName() + "§e hat das Ziel als erstes erreicht.");
-                }
             }
-            if(e.getAction() == Action.RIGHT_CLICK_BLOCK){
-                if(e.getClickedBlock().getType() == Material.NOTE_BLOCK){
-                    e.getPlayer().openInventory(generateInventory(e.getClickedBlock().getLocation()));
-                    e.setCancelled(true);
+            if(Jumper.getInstance().getGameState() == GameState.INGAME){
+                if(e.getAction() == Action.PHYSICAL){
+                    if(e.getClickedBlock().getType() == Material.IRON_PLATE){
+                        ChekpointManager chekpointManager = new ChekpointManager();
+                        if(!e.getClickedBlock().hasMetadata(player.getName())){
+                            chekpointManager.newCheckpoint(player);
+                            player.sendMessage(Jumper.getPREFIX() + " Checkpoint erreicht.");
+                            player.playSound(player.getLocation(), Sound.LEVEL_UP, 0.5F, 0.5F);
+                            e.getClickedBlock().setMetadata(player.getName(), new FixedMetadataValue(Jumper.getInstance(), true));
+                        }
+                    }
+                    if(e.getClickedBlock().getType() == Material.GOLD_PLATE){
+                        Jumper.getInstance().setGameState(GameState.GRACEPERIOD);
+                        Countdowns.getInGameCountdown().stopCountdown(false);
+                        player.getInventory().addItem(new ItemStack(Material.DIAMOND_BOOTS, 1));
+                        Bukkit.broadcastMessage(Jumper.getPREFIX() + " Der Spieler §c" + player.getDisplayName() + "§e hat das Ziel als erstes erreicht.");
+                    }
+                }
+                if(e.getAction() == Action.RIGHT_CLICK_BLOCK){
+                    if(e.getClickedBlock().getType() == Material.NOTE_BLOCK){
+                        e.getPlayer().openInventory(generateInventory(e.getClickedBlock().getLocation()));
+                        e.setCancelled(true);
+                    }
+                }
+                if(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK ){
+                    if(e.getItem().equals(Jumper.getInstance().getItemManager().getItem("kill"))){
+                        StatsManager statsManager = new StatsManager();
+                        statsManager.addFails(player.getUniqueId().toString(),1);
+                        Jumper.getInstance().getFails().put(player, Jumper.getInstance().getFails().get(player) + 1);
+                        ChekpointManager chekpointManager = Jumper.getInstance().getChekpointManager();
+                        player.setFallDistance(0);
+                        player.teleport(chekpointManager.getCheckPoint(player));
+                        player.setFallDistance(0);
+                    }
                 }
             }
         }
+
     }
 
     private Inventory generateInventory(Location location) {

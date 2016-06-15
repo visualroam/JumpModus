@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
@@ -30,35 +31,37 @@ public class PlayerDeathListener implements Listener {
         Player p = e.getEntity();
         Player killer = p.getKiller();
         if(Jumper.getInstance().getGameState() == GameState.DEATHMATCH){
+            e.getKeepInventory();
             StatsManager statsManager = new StatsManager();
             statsManager.addKills(killer.getUniqueId().toString(), 1);
             statsManager.addDeaths(p.getUniqueId().toString(), 1);
             DeathmatchManager deathmatchManager = Jumper.getInstance().getDeathmatchManager();
             deathmatchManager.death(p);
+
             if(deathmatchManager.getLives(p) == 0){
-                Inventory inv = p.getInventory();
-                Location loc = e.getEntity().getLocation();
-                Block block = loc.getBlock();
-                List<ItemStack> drops = e.getDrops();
-                block.setType(Material.CHEST);
-                BlockState bs = block.getState();
-                Chest chest = (Chest) bs;
-                for (ItemStack i : drops){
-                    if(i != null){
-                        chest.getInventory().addItem(i);
-                    }
-                    if (chest.getInventory().firstEmpty() == -1) { //if the first chest is full
-                        block.getRelative(BlockFace.WEST).setType(Material.CHEST); //make another chest
-                        chest = (Chest)block.getRelative(BlockFace.WEST).getState();
-                    }
+                p.getLocation().getBlock().setType(Material.CHEST);
+                Chest chest = (Chest) p.getLocation().getBlock().getState();
+
+                PlayerInventory inventory = p.getInventory();
+                ItemStack[] contents = inventory.getContents();
+                ItemStack[] armor = inventory.getArmorContents();
+                int i = 0;
+
+                for (ItemStack itemStack : contents) {
+                    if (itemStack == null || itemStack.getType() == Material.AIR) continue;
+                    chest.getInventory().setItem(i++, itemStack.clone());
                 }
-                for(ItemStack i : drops){
-                    i.setTypeId(0);
+
+                for (ItemStack itemStack : armor) {
+                    if (itemStack == null || itemStack.getType() == Material.AIR) continue;
+                    chest.getInventory().setItem(i++, itemStack.clone());
                 }
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Jumper.getInstance(), () -> block.setType(Material.AIR), 15 * 20L);
+
+                chest.update(true);
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Jumper.getInstance(), () -> chest.setType(Material.AIR), 15 * 20L);
                 p.setGameMode(GameMode.SPECTATOR);
                 Jumper.getInstance().getSpieler().remove(p);
-
             }
             Bukkit.broadcastMessage(Jumper.getPREFIX() + "§c" + p.getName() + "§e wurde von §c" + killer.getName() + "§e getötet.");
             p.sendMessage(Jumper.getPREFIX() +" Verbleibende Leben: §6" + Jumper.getInstance().getDeathmatchManager().getLives(p));

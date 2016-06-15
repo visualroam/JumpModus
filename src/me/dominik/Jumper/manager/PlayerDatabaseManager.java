@@ -7,9 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
 
-public class SpielerDatenbankManager {
+public class PlayerDatabaseManager {
 
-    public SpielerDatenbankManager(){
+    public PlayerDatabaseManager(){
 
     }
 

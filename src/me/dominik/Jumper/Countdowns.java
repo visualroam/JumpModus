@@ -1,6 +1,5 @@
 package me.dominik.Jumper;
 
-import com.sun.org.glassfish.external.statistics.Stats;
 import lombok.Getter;
 import lombok.Setter;
 import me.dominik.Jumper.manager.AreaManager;
@@ -10,23 +9,23 @@ import me.dominik.Jumper.manager.StatsManager;
 import me.dominik.Jumper.methoden.Countdown;
 import me.dominik.Jumper.methoden.CountdownEvent;
 
-import me.dominik.Jumper.methoden.Formatierung;
+import me.dominik.Jumper.methoden.Formatting;
 import me.dominik.Jumper.methoden.Title;
 import me.dominik.Jumper.scoreboards.DeathMatchScoreboard;
 import me.dominik.Jumper.scoreboards.IngameScoreboard;
 import me.dominik.Jumper.scoreboards.LobbyScoreboard;
-import net.minecraft.server.v1_8_R3.ChatMessage;
-import net.minecraft.server.v1_8_R3.MinecraftServer;
-import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
+import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.Material;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Team;
+import org.bukkit.inventory.*;
+import org.bukkit.inventory.ItemStack;
 
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import static net.minecraft.server.v1_8_R3.Material.AIR;
 
 
 public class Countdowns {
@@ -87,7 +86,7 @@ public class Countdowns {
                 }
                 if(i == 5){
                     arena = new AreaManager();
-                    int randomID = Formatierung.Random(1, arena.getSize("Arenas"));
+                    int randomID = Formatting.Random(1, arena.getSize("Arenas"));
                     Bukkit.broadcastMessage("");
                     Bukkit.broadcastMessage(Jumper.getPREFIX() + "§6Gespielt wird auf §c" + arena.getMapName(randomID) + " !");
                     Bukkit.broadcastMessage(Jumper.getPREFIX() + "§6Von: " + arena.getMapAuthor(randomID));
@@ -111,6 +110,8 @@ public class Countdowns {
             Jumper.getInstance().setIngameScoreboard(new IngameScoreboard(spawns,finish));
             for(Player p : Bukkit.getOnlinePlayers()){
                 Jumper.getInstance().getSpieler().add(p);
+                p.getInventory().clear();
+                p.getInventory().addItem(Jumper.getInstance().getItemManager().getItem("kill"));
             }
 
             for(int i = 0; i < Jumper.getInstance().getSpieler().size(); i++){
@@ -121,7 +122,6 @@ public class Countdowns {
                 player.setHealth(20.0D);
                 player.setLevel(0);
                 player.setExp(0.0F);
-                player.getInventory().clear();
                 player.teleport(location);
                 statsManager.addGamesPlayed(player.getUniqueId().toString(),1);
             }
@@ -184,7 +184,7 @@ public class Countdowns {
         public void finish() {
             Jumper.getInstance().setDeathmatchManager(new DeathmatchManager(Jumper.getInstance().getSpieler()));
             Jumper.getInstance().setGameState(GameState.GRACEPERIOD);
-            int randomID = Formatierung.Random(1, arena.getSize("Deathmatch"));
+            int randomID = Formatting.Random(1, arena.getSize("Deathmatch"));
             AreaManager areaManager = new AreaManager();
             Bukkit.broadcastMessage("");
             Bukkit.broadcastMessage(Jumper.getPREFIX() + "§6Gespielt wird auf §c" + arena.getDeathMatchName(randomID) + " !");
@@ -195,6 +195,7 @@ public class Countdowns {
                 Player player = Jumper.getInstance().getSpieler().get(i);
                 Location location = spawnss.get("finish" + String.valueOf(i + 1));
                 player.teleport(location);
+                player.getInventory().setItem(0, null);
                 Jumper.getInstance().getDeathmatchManager().saverespawnLocations(player);
             }
             Jumper.getInstance().setDeathMatchScoreboard(new DeathMatchScoreboard(Jumper.getInstance().getDeathmatchManager()));

@@ -3,10 +3,9 @@ package me.dominik.Jumper.listener.player;
 import me.dominik.Jumper.Countdowns;
 import me.dominik.Jumper.GameState;
 import me.dominik.Jumper.Jumper;
-import me.dominik.Jumper.manager.SpielerDatenbankManager;
+import me.dominik.Jumper.manager.PlayerDatabaseManager;
 import me.dominik.Jumper.manager.StatsManager;
 import me.dominik.Jumper.manager.StatsWall;
-import me.dominik.Jumper.scoreboards.LobbyScoreboard;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -28,9 +27,9 @@ public class PlayerJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         String uuid = p.getUniqueId().toString();
-        SpielerDatenbankManager spielerDatenbankManager = new SpielerDatenbankManager();
-        spielerDatenbankManager.createPlayer(p);
-        spielerDatenbankManager.sameName(p);
+        PlayerDatabaseManager playerDatabaseManager = new PlayerDatabaseManager();
+        playerDatabaseManager.createPlayer(p);
+        playerDatabaseManager.sameName(p);
 
 
         if (!dropsRemoved) {
@@ -41,7 +40,7 @@ public class PlayerJoinListener implements Listener {
         e.setJoinMessage(Jumper.getPREFIX() + "§2[+] §e" + p.getName());
         StatsManager statsManager = new StatsManager();
         statsManager.createPlayer(uuid);Jumper.getInstance().getChekpointmessage().put(p, false);
-        p.teleport(new Location(Bukkit.getWorld("world"),0,152,3000));
+        p.teleport(new Location(Bukkit.getWorld("world"),-70,70,274));
 
         StatsWall statsWall = new StatsWall();
         statsWall.updateAll();
@@ -58,6 +57,11 @@ public class PlayerJoinListener implements Listener {
         p.setFoodLevel(20);
         p.setExp(0.0F);
         p.setLevel(0);
+
+        Jumper.getInstance().getAchievementManager().createPlayer(p.getUniqueId().toString());
+
+        p.getInventory().setItem(4, Jumper.getInstance().getItemManager().getItem("vote"));
+        p.getInventory().setItem(5, Jumper.getInstance().getItemManager().getItem("ach"));
 
         if (Jumper.getInstance().getGameState().isLobby() && Jumper.getInstance().getGameState() != GameState.ENDING) {
 

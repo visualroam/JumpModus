@@ -2,18 +2,9 @@ package me.dominik.Jumper.manager;
 
 import com.google.gson.reflect.TypeToken;
 import me.dominik.Jumper.Jumper;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.SkullType;
-import org.bukkit.block.Banner;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Sign;
-import org.bukkit.block.Skull;
-import org.bukkit.entity.Player;
 
 import java.lang.reflect.Type;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -21,7 +12,8 @@ import java.util.*;
 public class StatsManager {
 
     private Type STRING_LOCATION_MAP = new TypeToken<Map<String, Location>>() { }.getType();
-    private HashMap<Integer, String> rang = new HashMap<>();
+    private HashMap<Integer, String> rangWithInteger = new HashMap<>();
+    private HashMap<String, Integer> rangWithString = new HashMap<>();
 
     public StatsManager(){
 
@@ -266,18 +258,46 @@ public class StatsManager {
 
     //Stats Wall
 
-    public HashMap<Integer, String> getOrder(String name, int anzahl){
+    public HashMap<Integer, String> getOrderWithInteger(String name, int anzahl){
         ResultSet rs = Jumper.getInstance().getMySQL().query("SELECT UUID FROM Stats ORDER BY " + name + " DESC LIMIT " + anzahl);
             int i = 0;
             try {
                 while (rs.next()){
                     i++;
-                    rang.put(i, rs.getString("UUID"));
+                    rangWithInteger.put(i, rs.getString("UUID"));
                 }
             } catch (SQLException e){
 
             }
-        return rang;
+        return rangWithInteger;
+    }
+
+    public HashMap<String, Integer> getOrderWithString(String name, int anzahl){
+        ResultSet rs = Jumper.getInstance().getMySQL().query("SELECT UUID FROM Stats ORDER BY " + name + " DESC LIMIT " + anzahl);
+        int i = 0;
+        try {
+            while (rs.next()){
+                i++;
+                String ujosdgifudsif = rs.getString("UUID");
+                rangWithString.put(rs.getString("UUID"), i);
+            }
+        } catch (SQLException e){
+
+        }
+        return rangWithString;
+    }
+
+    public int getSize(String name){
+        ResultSet set = Jumper.getInstance().getMySQL().query("SELECT COUNT(*) FROM " + name);
+        try {
+            if(set.next()) {
+                return set.getInt(1);
+            }
+        } catch (SQLException var3) {
+            var3.printStackTrace();
+        }
+
+        return -1;
     }
 
 

@@ -1,22 +1,24 @@
-package me.dominik.Jumper.listener.player;
+package me.dominik.Jumper.listener.inventory;
 
 import me.dominik.Jumper.GameState;
 import me.dominik.Jumper.Jumper;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
-public class PlayerDropItemListener implements Listener {
+public class InventoryInteractListener implements Listener {
 
     @EventHandler
-    public void onPlayerDropItem(PlayerDropItemEvent e) {
+    public void onInteract(InventoryClickEvent e){
         if(Jumper.getInstance().getGameState() == GameState.WAITING || Jumper.getInstance().getGameState() == GameState.COUNTDOWN){
             e.setCancelled(true);
         }
-        if(e.getItemDrop().getItemStack().equals(Jumper.getInstance().getItemManager().getItem("kill"))){
+        if(e.getCurrentItem().equals(Jumper.getInstance().getItemManager().getItem("kill"))){
             e.setCancelled(true);
         }
     }
 
 }
+
+
 

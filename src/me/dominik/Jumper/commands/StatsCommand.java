@@ -1,15 +1,12 @@
 package me.dominik.Jumper.commands;
 
 import me.dominik.Jumper.Jumper;
-import me.dominik.Jumper.manager.SpielerDatenbankManager;
+import me.dominik.Jumper.manager.PlayerDatabaseManager;
 import me.dominik.Jumper.manager.StatsManager;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.UUID;
 
 public class StatsCommand implements CommandExecutor {
     @Override
@@ -33,12 +30,13 @@ public class StatsCommand implements CommandExecutor {
                     statsManager.resetStats(p.getUniqueId().toString());
                     return true;
                 }
-                SpielerDatenbankManager spielerDatenbankManager = new SpielerDatenbankManager();
-                String uuid = spielerDatenbankManager.getPlayerUUID(args[0]);
+                PlayerDatabaseManager playerDatabaseManager = new PlayerDatabaseManager();
+                String uuid = playerDatabaseManager.getPlayerUUID(args[0]);
                 StatsManager statsManager = new StatsManager();
 
                 p.sendMessage(Jumper.getPREFIX() + " Die Stats von  " + args[0] + "sind:");
                 p.sendMessage("");
+                p.sendMessage("   §4Ranking: " + statsManager.getOrderWithString("Kills", statsManager.getSize("Stats")).get(uuid) + " Platz.");
                 p.sendMessage("   §cGamesPlayed: " + statsManager.getGamePlayed(uuid));
                 p.sendMessage("   §6Kills: " + statsManager.getKills(uuid));
                 p.sendMessage("   §bDeaths: " + statsManager.getDeaths(uuid));
