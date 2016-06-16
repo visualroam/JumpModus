@@ -104,16 +104,15 @@ public class PlayerInteractListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent e){
         try {
 
-        }catch (NullPointerException aex){
-
             Player player = e.getPlayer();
             if(Jumper.getInstance().getGameState() == GameState.WAITING || Jumper.getInstance().getGameState() == GameState.COUNTDOWN){
                 if(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK ){
                     if(e.getItem().equals(Jumper.getInstance().getItemManager().getItem("vote"))){
-                        //TODO:Voting
+                        Jumper.getInstance().getVoteingManager().VoteInventory(player);
                     }
                     if(e.getItem().equals(Jumper.getInstance().getItemManager().getItem("ach"))){
-                        //TODO:ACHIVMENT
+                        Jumper.getInstance().getAchievementManager().openInventory(player);
+                        player.sendMessage("TEST");
                     }
                 }
             }
@@ -153,6 +152,8 @@ public class PlayerInteractListener implements Listener {
                     }
                 }
             }
+        }catch (NullPointerException aex){
+
         }
 
     }

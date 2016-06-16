@@ -22,6 +22,7 @@ public class PlayerQuitListener implements Listener {
                 Jumper.getInstance().setGameState(GameState.WAITING);
                 Bukkit.broadcastMessage(Jumper.PREFIX + "§cEs sind zuwenige Spieler online um das Spiel zu starten. Warte auf §4" + (Jumper.getInstance().getSettings().getMinPlayers() - (Bukkit.getOnlinePlayers().size() - 1)) + " §cweitere Spieler...");
             }
+            Jumper.getInstance().getVoteingManager().removePlayerVote(p);
             event.setQuitMessage(Jumper.getPREFIX() + "§2[-] §e" + p.getName());
         } else{
             Jumper.getInstance().checkEnd();

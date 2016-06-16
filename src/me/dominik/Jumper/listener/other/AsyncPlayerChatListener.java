@@ -15,15 +15,8 @@ public class AsyncPlayerChatListener implements Listener {
     public void onChat(AsyncPlayerChatEvent event){
         Player p = event.getPlayer();
         if(event.getMessage().contains("666")){
-            if(!Jumper.getInstance().getGainedAch().get(p).contains(Jumper.getInstance().getAchievementManager().getAchievement("Der Teufel"))){
-                AchievementManager manager = Jumper.getInstance().getAchievementManager();
-                HashMap<String, Boolean> test = manager.StringToList(manager.getDataBaseString(p.getUniqueId().toString()));
-                test.replace("Der Teufel", true);
-                manager.setString(p.getUniqueId().toString(), manager.ListToString(test));
-                p.sendMessage("§7§m✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛");
-                p.sendMessage("§2Erfolg erziehlt: §a" + " Der Teufel");
-                p.sendMessage("§2" + manager.getAchievement("Der Teufel").getDescription());
-                p.sendMessage("§7§m✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛✛");
+            if(!Jumper.getInstance().getAchievementManager().hasAchievement(Jumper.getInstance().getAchievementManager().getAchievement("Der Teufel"), p)){
+                Jumper.getInstance().getAchievementManager().gotAchievment(p, Jumper.getInstance().getAchievementManager().getAchievement("Der Teufel"));
             }
         }
     }

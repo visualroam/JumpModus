@@ -16,7 +16,7 @@ public class Settings {
 
     @Getter @Setter private GameState startupMode = GameState.WAITING;
 
-    @Getter @Setter private int minPlayers = 2;
+    @Getter @Setter private int minPlayers = 1;
 
 
 

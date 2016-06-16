@@ -18,8 +18,7 @@ public class TestCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         Player p = (Player) commandSender;
-        AchievementManager achievementManager = Jumper.getInstance().getAchievementManager();
-        p.sendMessage(achievementManager.StringToList(achievementManager.getDataBaseString(p.getUniqueId().toString())).get("Der Teufel").toString());
+        p.sendMessage(String.valueOf(Jumper.getInstance().getVoteingManager().getMapID("BetterThanFunky")));
         return true;
     }
 }

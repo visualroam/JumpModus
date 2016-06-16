@@ -3,6 +3,7 @@ package me.dominik.Jumper.listener.player;
 import me.dominik.Jumper.Countdowns;
 import me.dominik.Jumper.GameState;
 import me.dominik.Jumper.Jumper;
+import me.dominik.Jumper.manager.AchievementManager;
 import me.dominik.Jumper.manager.PlayerDatabaseManager;
 import me.dominik.Jumper.manager.StatsManager;
 import me.dominik.Jumper.manager.StatsWall;
@@ -58,7 +59,16 @@ public class PlayerJoinListener implements Listener {
         p.setExp(0.0F);
         p.setLevel(0);
 
-        Jumper.getInstance().getAchievementManager().createPlayer(p.getUniqueId().toString());
+        Jumper.getInstance().getVoteingManager().addPlayer(p);
+
+        AchievementManager achievementManager = Jumper.getInstance().getAchievementManager();
+        achievementManager.createPlayer(p.getUniqueId().toString());
+        Jumper.getInstance().getGainedAch().put(p, achievementManager.gainedAchievments(p));
+        achievementManager.newAchievment(p);
+
+        if(!Jumper.getInstance().getAchievementManager().hasAchievement(Jumper.getInstance().getAchievementManager().getAchievement("First Play"), p)){
+            Jumper.getInstance().getAchievementManager().gotAchievment(p, Jumper.getInstance().getAchievementManager().getAchievement("First Play"));
+        }
 
         p.getInventory().setItem(4, Jumper.getInstance().getItemManager().getItem("vote"));
         p.getInventory().setItem(5, Jumper.getInstance().getItemManager().getItem("ach"));

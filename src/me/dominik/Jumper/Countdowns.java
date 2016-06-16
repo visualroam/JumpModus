@@ -86,7 +86,7 @@ public class Countdowns {
                 }
                 if(i == 5){
                     arena = new AreaManager();
-                    int randomID = Formatting.Random(1, arena.getSize("Arenas"));
+                    int randomID = Jumper.getInstance().getVoteingManager().whoWin();
                     Bukkit.broadcastMessage("");
                     Bukkit.broadcastMessage(Jumper.getPREFIX() + "§6Gespielt wird auf §c" + arena.getMapName(randomID) + " !");
                     Bukkit.broadcastMessage(Jumper.getPREFIX() + "§6Von: " + arena.getMapAuthor(randomID));
@@ -270,6 +270,7 @@ public class Countdowns {
         @Override
         public void finish() {
             if(!Jumper.getInstance().already){
+                Jumper.getInstance().setGameState(GameState.ENDING);
                 Bukkit.broadcastMessage(Jumper.getPREFIX() + " Keiner konnt das spiel für sich entscheiden!");
                 Jumper.getInstance().stopServer();
             }

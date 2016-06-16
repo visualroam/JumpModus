@@ -44,9 +44,9 @@ public class ItemManager {
 
         lore.clear();
 
-        ItemStack achivment = new ItemStack(Material.GLOWSTONE_DUST, 1);
+        ItemStack achivment = new ItemStack(Material.EMERALD, 1);
         ItemMeta ach = instakill.getItemMeta();
-        ach.setDisplayName("§6A§dC§cH§bI§eV§aM");
+        ach.setDisplayName("§5§lAchievement");
         lore.add("§4khsiuhfduisahf");
         lore.add("dakjofhoiujds");
         vote.setLore(lore);

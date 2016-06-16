@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import lombok.Setter;
+import me.dominik.Jumper.achievement.FirstJoinAchievment;
+import me.dominik.Jumper.achievement.ProAchivment;
 import me.dominik.Jumper.achievement.TeufelAchivment;
 import me.dominik.Jumper.commands.*;
 import me.dominik.Jumper.listener.block.BlockBreakListener;
@@ -57,6 +59,7 @@ public class Jumper extends JavaPlugin implements Listener {
     @Getter @Setter private ItemManager itemManager = new ItemManager();
     @Getter @Setter private AchievementManager achievementManager = new AchievementManager();
     @Getter private HashMap<Player, List<Achievement>> gainedAch = new HashMap<>();
+    @Getter VoteingManager voteingManager = new VoteingManager(new AreaManager());
 
 
     @Override
@@ -66,6 +69,8 @@ public class Jumper extends JavaPlugin implements Listener {
         setGameState(GameState.WAITING);
 
         connectMySQL();
+
+        voteingManager.startVoting();
 
         initWorld();
         registerCommands();
@@ -137,6 +142,8 @@ public class Jumper extends JavaPlugin implements Listener {
     public void initAchievments(){
         AchievementManager manager = getAchievementManager();
         manager.registerAchievement(new TeufelAchivment());
+        manager.registerAchievement(new ProAchivment());
+        manager.registerAchievement(new FirstJoinAchievment());
     }
 
 
@@ -197,9 +204,10 @@ public class Jumper extends JavaPlugin implements Listener {
     Allgmeine Kisten verteilung | erledigt.
     Spawnen in Richtung Map | erledigt.
     Mehr Zeit um das Ziel zu erreichen.
-    Sound usw :D
-    Instakill Item. | erledigt
-    Settings
+    Sound usw :D |
+    Instakill Item. | erledigt <--- Delay Funktion
+    Settings |
+
 
 
   */
