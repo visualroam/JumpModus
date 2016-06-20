@@ -16,7 +16,7 @@ public class PlayerRespawnListener implements Listener{
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e){
         Player p = e.getPlayer();
-        if(Jumper.getInstance().getGameState() == GameState.INGAME){
+        if(Jumper.getInstance().getGameState() == GameState.INGAME || Jumper.getInstance().getGameState() == GameState.AFTER){
             ChekpointManager chekpointManager = Jumper.getInstance().getChekpointManager();
             e.setRespawnLocation(chekpointManager.getCheckPoint(p));
 

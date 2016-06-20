@@ -40,6 +40,7 @@ public class PlayerDeathListener implements Listener {
 
             if(deathmatchManager.getLives(p) == 0){
                 p.getLocation().getBlock().setType(Material.CHEST);
+
                 Chest chest = (Chest) p.getLocation().getBlock().getState();
 
                 PlayerInventory inventory = p.getInventory();
@@ -59,7 +60,7 @@ public class PlayerDeathListener implements Listener {
 
                 chest.update(true);
 
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Jumper.getInstance(), () -> chest.setType(Material.AIR), 15 * 20L);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Jumper.getInstance(), () -> p.getLocation().getBlock().setType(Material.AIR), 5 * 20L);
                 p.setGameMode(GameMode.SPECTATOR);
                 Jumper.getInstance().getSpieler().remove(p);
             }

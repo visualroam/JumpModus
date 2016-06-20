@@ -14,7 +14,7 @@ public class SeverPingEvent implements Listener{
         GameState gameState = Jumper.getInstance().getGameState();
         if (gameState == GameState.WAITING || gameState == GameState.COUNTDOWN) {
             e.setMotd("§4§lWaiting for Players");
-        } else if (gameState == GameState.INGAME || gameState == GameState.DEATHMATCH) {
+        } else if (gameState == GameState.INGAME || gameState == GameState.DEATHMATCH || Jumper.getInstance().getGameState() == GameState.AFTER) {
             e.setMotd("§9§lIn einem Game!");
         } else if (gameState == GameState.ENDING) {
             e.setMotd("§7§lRestarting!");

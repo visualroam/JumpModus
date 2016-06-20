@@ -8,24 +8,18 @@ import me.dominik.Jumper.manager.DeathmatchManager;
 import me.dominik.Jumper.manager.StatsManager;
 import me.dominik.Jumper.methoden.Countdown;
 import me.dominik.Jumper.methoden.CountdownEvent;
-
 import me.dominik.Jumper.methoden.Formatting;
 import me.dominik.Jumper.methoden.Title;
 import me.dominik.Jumper.scoreboards.DeathMatchScoreboard;
 import me.dominik.Jumper.scoreboards.IngameScoreboard;
 import me.dominik.Jumper.scoreboards.LobbyScoreboard;
-import net.minecraft.server.v1_8_R3.*;
-import net.minecraft.server.v1_8_R3.Material;
+import net.minecraft.server.v1_8_R3.ChatMessage;
+import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.*;
-import org.bukkit.inventory.ItemStack;
-
 
 import java.util.Map;
-
-import static net.minecraft.server.v1_8_R3.Material.AIR;
 
 
 public class Countdowns {
@@ -203,6 +197,38 @@ public class Countdowns {
             gracePeriodCountdown.startCountdown();
         }
     },Jumper.getInstance().getSettings().getIngameCountdow(),0,20L);
+
+
+    @Getter private static Countdown afterIngame = new Countdown(Jumper.getInstance(), new CountdownEvent() {
+        @Override
+        public void tick(int i) {
+            IngameScoreboard.scoreboardTimer = i;
+            Jumper.getInstance().getIngameScoreboard().update();
+        }
+
+        @Override
+        public void finish() {
+            Jumper.getInstance().setDeathmatchManager(new DeathmatchManager(Jumper.getInstance().getSpieler()));
+            Jumper.getInstance().setGameState(GameState.GRACEPERIOD);
+            int randomID = Formatting.Random(1, arena.getSize("Deathmatch"));
+            AreaManager areaManager = new AreaManager();
+            Bukkit.broadcastMessage("");
+            Bukkit.broadcastMessage(Jumper.getPREFIX() + "§6Gespielt wird auf §c" + arena.getDeathMatchName(randomID) + " !");
+            Bukkit.broadcastMessage(Jumper.getPREFIX() + "§6Von: " + arena.getDeathMatchAuthor(randomID));
+            Bukkit.broadcastMessage("");
+            spawnss = areaManager.getDeathMatchSpawns(randomID);
+            for(int i = 0; i < Jumper.getInstance().getSpieler().size(); i++){
+                Player player = Jumper.getInstance().getSpieler().get(i);
+                Location location = spawnss.get("finish" + String.valueOf(i + 1));
+                player.teleport(location);
+                player.getInventory().setItem(0, null);
+                Jumper.getInstance().getDeathmatchManager().saverespawnLocations(player);
+            }
+            Jumper.getInstance().setDeathMatchScoreboard(new DeathMatchScoreboard(Jumper.getInstance().getDeathmatchManager()));
+            Jumper.getInstance().getDeathMatchScoreboard().setIngameScoreboard();
+            gracePeriodCountdown.startCountdown();
+        }
+    },15, 0 , 20L);
 
 
     @Getter private static Countdown gracePeriodCountdown = new Countdown(Jumper.getInstance(), new CountdownEvent() {

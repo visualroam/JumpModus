@@ -5,7 +5,7 @@ package me.dominik.Jumper;
  */
 public enum GameState {
 
-    WAITING(true), COUNTDOWN(true), INGAME(false), GRACEPERIOD(false) ,DEATHMATCH(false), ENDING(true), EDIT(false);
+    WAITING(true), COUNTDOWN(true), INGAME(false), AFTER(false),GRACEPERIOD(false) ,DEATHMATCH(false), ENDING(true), EDIT(false);
 
     private boolean lobby;
 

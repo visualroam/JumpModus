@@ -52,34 +52,35 @@ public class RegionManager {
         return loc2;
     }
 
+
     public Map<String, Location> getSpectatorSpawnLocation(boolean what){
         Location spectloc =  new Location(world,0,0,0);
         Map<String, Location> specspawn = new HashMap<>();
             specspawn.put("specspawn", spectloc);
             Location min = this.getLocationMin();
-            Location max = this.getLocationMax();
-            World w = min.getWorld();
+        Location max = this.getLocationMax();
+        World w = min.getWorld();
 
-            int minX = min.getBlockX();
-            int minY = min.getBlockY();
-            int minZ = min.getBlockZ();
+        int minX = min.getBlockX();
+        int minY = min.getBlockY();
+        int minZ = min.getBlockZ();
 
-            int maxX = max.getBlockX();
-            int maxY = max.getBlockY();
-            int maxZ = max.getBlockZ();
+        int maxX = max.getBlockX();
+        int maxY = max.getBlockY();
+        int maxZ = max.getBlockZ();
 
-            for(int x = minX; x <= maxX; x++){
-                for(int y = minY; y <= maxY; y++){
-                    for(int z = minZ; z <= maxZ; z++){
-                        Block b = w.getBlockAt(x,y,z);
-                        if(b.getType().equals(Material.SPONGE)){
-                            spectloc = b.getLocation();
-                            specspawn.replace("specspawn", spectloc);
-                            return specspawn;
-                        }
+        for(int x = minX; x <= maxX; x++){
+            for(int y = minY; y <= maxY; y++){
+                for(int z = minZ; z <= maxZ; z++){
+                    Block b = w.getBlockAt(x,y,z);
+                    if(b.getType().equals(Material.SPONGE)){
+                        spectloc = b.getLocation();
+                        specspawn.replace("specspawn", spectloc);
+                        return specspawn;
                     }
                 }
             }
+        }
         return specspawn;
     }
 

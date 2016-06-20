@@ -14,6 +14,7 @@ import me.dominik.Jumper.listener.block.BlockPlaceListener;
 import me.dominik.Jumper.listener.entity.EntityDamageListener;
 import me.dominik.Jumper.listener.inventory.InventoryInteractListener;
 import me.dominik.Jumper.listener.other.AsyncPlayerChatListener;
+import me.dominik.Jumper.listener.other.CreatureSpawnListener;
 import me.dominik.Jumper.listener.other.SeverPingEvent;
 import me.dominik.Jumper.listener.player.*;
 import me.dominik.Jumper.manager.*;
@@ -118,6 +119,8 @@ public class Jumper extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new LoginEventListener(), this);
         pluginManager.registerEvents(new InventoryInteractListener(), this);
         pluginManager.registerEvents(new AsyncPlayerChatListener(), this);
+        pluginManager.registerEvents(new CreatureSpawnListener(), this);
+
     }
 
     public void initWorld() {
@@ -203,9 +206,9 @@ public class Jumper extends JavaPlugin implements Listener {
     Fails der Runde :D | erledigt.
     Allgmeine Kisten verteilung | erledigt.
     Spawnen in Richtung Map | erledigt.
-    Mehr Zeit um das Ziel zu erreichen.
-    Sound usw :D |
-    Instakill Item. | erledigt <--- Delay Funktion
+    Mehr Zeit um das Ziel zu erreichen. | erledigt
+    Sound usw :D | erledigt
+    Instakill Item. | erledigt
     Settings |
 
 

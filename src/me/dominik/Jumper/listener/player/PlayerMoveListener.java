@@ -13,7 +13,7 @@ public class PlayerMoveListener implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent event){
         Player p = event.getPlayer();
-        if(Jumper.getInstance().getGameState() == GameState.INGAME  && p.getLocation().getY() < 100){
+        if((Jumper.getInstance().getGameState() == GameState.INGAME  && p.getLocation().getY() < 100) || (Jumper.getInstance().getGameState() == GameState.INGAME  && p.getLocation().getY() < 100)){
             StatsManager statsManager = new StatsManager();
             statsManager.addFails(p.getUniqueId().toString(),1);
             Jumper.getInstance().getFails().put(p, Jumper.getInstance().getFails().get(p) + 1);

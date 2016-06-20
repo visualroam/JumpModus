@@ -13,7 +13,7 @@ public class EntityDamageListener implements Listener {
     @EventHandler
     public void onEntityDamage(EntityDamageEvent e){
         GameState aktuell = Jumper.getInstance().getGameState();
-        if(aktuell == GameState.WAITING || aktuell == GameState.COUNTDOWN || aktuell == GameState.GRACEPERIOD || aktuell == GameState.ENDING){
+        if(aktuell == GameState.WAITING || aktuell == GameState.COUNTDOWN || aktuell == GameState.INGAME || aktuell == GameState.AFTER||aktuell == GameState.GRACEPERIOD || aktuell == GameState.ENDING){
             e.setCancelled(true);
         }
     }

@@ -8,9 +8,7 @@ import me.dominik.Jumper.manager.StatsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,10 +17,13 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import javax.swing.plaf.synth.SynthOptionPaneUI;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class PlayerInteractListener implements Listener {
@@ -116,7 +117,7 @@ public class PlayerInteractListener implements Listener {
                     }
                 }
             }
-            if(Jumper.getInstance().getGameState() == GameState.INGAME){
+            if(Jumper.getInstance().getGameState() == GameState.INGAME || Jumper.getInstance().getGameState() == GameState.AFTER){
                 if(e.getAction() == Action.PHYSICAL){
                     if(e.getClickedBlock().getType() == Material.IRON_PLATE){
                         ChekpointManager chekpointManager = new ChekpointManager();
@@ -128,10 +129,20 @@ public class PlayerInteractListener implements Listener {
                         }
                     }
                     if(e.getClickedBlock().getType() == Material.GOLD_PLATE){
-                        Jumper.getInstance().setGameState(GameState.GRACEPERIOD);
+                        if(Jumper.getInstance().getGameState() == GameState.AFTER){
+                            player.getInventory().addItem(new ItemStack(Material.IRON_BOOTS, 1));
+                            Bukkit.broadcastMessage(Jumper.getPREFIX() + " Der Spieler §c" + player.getDisplayName() + "§e hat ebenfalls das Ziel erreicht.");
+                        }
+
+                        if(!Jumper.getInstance().getAchievementManager().hasAchievement(Jumper.getInstance().getAchievementManager().getAchievement("Der UBER-Pro"), player)){
+                            Jumper.getInstance().getAchievementManager().gotAchievment(player, Jumper.getInstance().getAchievementManager().getAchievement("Der UBER-Pro"));
+                        }
+
+                        Jumper.getInstance().setGameState(GameState.AFTER);
                         Countdowns.getInGameCountdown().stopCountdown(false);
                         player.getInventory().addItem(new ItemStack(Material.DIAMOND_BOOTS, 1));
                         Bukkit.broadcastMessage(Jumper.getPREFIX() + " Der Spieler §c" + player.getDisplayName() + "§e hat das Ziel als erstes erreicht.");
+                        Countdowns.getAfterIngame().startCountdown();
                     }
                 }
                 if(e.getAction() == Action.RIGHT_CLICK_BLOCK){
@@ -142,6 +153,15 @@ public class PlayerInteractListener implements Listener {
                 }
                 if(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK ){
                     if(e.getItem().equals(Jumper.getInstance().getItemManager().getItem("kill"))){
+                        if(e.getItem().getItemMeta().getDisplayName().equals("§5§lBitte Warten")){
+                            return;
+                        }
+                        player.getInventory().clear(0);
+                        ItemStack i = e.getItem();
+                        ItemMeta meta = i.getItemMeta();
+                        meta.setDisplayName("§5§lBitte Warten");
+                        i.setItemMeta(meta);
+                        player.getInventory().setItem(0, i);
                         StatsManager statsManager = new StatsManager();
                         statsManager.addFails(player.getUniqueId().toString(),1);
                         Jumper.getInstance().getFails().put(player, Jumper.getInstance().getFails().get(player) + 1);
@@ -149,6 +169,13 @@ public class PlayerInteractListener implements Listener {
                         player.setFallDistance(0);
                         player.teleport(chekpointManager.getCheckPoint(player));
                         player.setFallDistance(0);
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(Jumper.getInstance(), () -> {
+                            player.getInventory().clear(0);
+                            meta.setDisplayName("§6I§dn§cs§bt§ea§aK§3i§5l§4l");
+                            i.setItemMeta(meta);
+                            player.getInventory().setItem(0, i);
+                        }, 100L);
+
                     }
                 }
             }
